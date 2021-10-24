@@ -1,0 +1,10 @@
+[package]
+name = "transaction_engine"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+csv = "1.1.6"
+rust_decimal = "1.17.0"
+serde = { version = "1.0.130", features = ["derive"] }
+thiserror = "1.0.30"
