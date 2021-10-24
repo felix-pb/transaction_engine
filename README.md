@@ -31,7 +31,7 @@ cargo doc --open
 
 ## Binary
 
-The binary crate is just a simple wrapper around the library to handle CSV input deserialization and output serialization. It should be functionally correct, although less care was taken to write clean and modular code. That's because, in a real-world scenario, the transaction engine would probably be bundled with a server (instead of a CSV file reader). The library implementation should make it trivial to do so and to process transactions in a "streaming" manner.
+The binary crate is just a simple wrapper around the library to handle CSV input deserialization and output serialization. It should be functionally correct, although less care was taken to write clean and modular code. That's because, in a real-world scenario, the transaction engine would probably be bundled with a server (instead of a CSV file reader). The library implementation should make it trivial to do so (e.g. with Tokio) and to process transactions in a "streaming" manner.
 
 ## Tests
 
