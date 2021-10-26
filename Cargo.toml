@@ -8,3 +8,6 @@ csv = "1.1.6"
 rust_decimal = "1.17.0"
 serde = { version = "1.0.130", features = ["derive"] }
 thiserror = "1.0.30"
+
+[dev-dependencies]
+parking_lot = "0.11.2"

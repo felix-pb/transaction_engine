@@ -58,7 +58,7 @@ There are no unit tests currently, although it would be worthwhile to add some g
 
 ## Benchmark
 
-I've included a simple benchmark in `examples/benchmark.rs` that does the following:
+I've included a simple benchmark in `examples/single-threaded.rs` that does the following:
 - Process 65.536 million transactions by going through each client account 1000 times in a round-robin manner.
 - Make deposits for the first half and withdrawals for the second half.
 
