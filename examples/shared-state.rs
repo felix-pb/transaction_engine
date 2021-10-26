@@ -8,10 +8,13 @@ const NUMBER_OF_THREADS: u32 = 10;
 const NUMBER_OF_TRANSACTIONS: u32 = 6_553_600;
 
 fn main() {
+    // Initialize the transaction engine.
     let engine = Arc::new(Mutex::new(TransactionEngine::init()));
 
+    // Start the timer.
     let now = Instant::now();
 
+    // Process 6.5536 million transactions in each worker thread.
     let mut threads = Vec::with_capacity(10);
     for i in 0..NUMBER_OF_THREADS {
         let engine = engine.clone();
@@ -29,9 +32,24 @@ fn main() {
         threads.push(thread);
     }
 
+    // Wait for all worker threads to finish.
     threads
         .into_iter()
         .for_each(|thread| thread.join().unwrap());
 
-    dbg!(now.elapsed());
+    // Stop the timer.
+    let elapsed = now.elapsed();
+
+    // Validate that each client account is empty and unlocked.
+    let engine = engine.lock();
+    for client in ClientId::MIN..=ClientId::MAX {
+        let account = engine.get_account(client).unwrap();
+        assert_eq!(0, account.get_available_balance());
+        assert_eq!(0, account.get_held_balance());
+        assert_eq!(0, account.get_total_balance());
+        assert!(!account.is_locked());
+    }
+
+    // Print the result of the benchmark.
+    dbg!(elapsed);
 }
