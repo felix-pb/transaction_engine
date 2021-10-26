@@ -1,11 +1,10 @@
 use crate::{Amount, Client, ClientId, Result, TransactionError, TransactionId, TransactionState};
 use crate::{SpecialTransaction, SpecialTransactionKind, Transaction, TransactionKind};
-use std::collections::hash_map::{HashMap, Iter};
 use TransactionError::*;
 use TransactionId as Tx;
 
-type ClientMap = HashMap<ClientId, Client>;
-type TransactionMap = HashMap<Tx, Transaction>;
+type ClientMap = Vec<Option<Client>>;
+type TransactionMap = Vec<Option<Transaction>>;
 
 /******************************************
  *               PUBLIC API               *
@@ -34,19 +33,22 @@ impl TransactionEngine {
     /// Constructs a new transaction engine with no history of client accounts or transactions.
     pub fn init() -> Self {
         Self {
-            clients: HashMap::new(),
-            transactions: HashMap::new(),
+            clients: vec![None; 65_536],
+            transactions: vec![None; 65_536_000],
         }
     }
 
     /// Returns a single client account by ID.
     pub fn get_account(&self, client: ClientId) -> Option<&Client> {
-        self.clients.get(&client)
+        self.clients[client as usize].as_ref()
     }
 
     /// Returns an iterator over all client accounts in arbitrary order.
-    pub fn iter_accounts(&self) -> Iter<ClientId, Client> {
-        self.clients.iter()
+    pub fn iter_accounts(&self) -> impl Iterator<Item = (ClientId, &Client)> {
+        self.clients
+            .iter()
+            .enumerate()
+            .filter_map(|(id, client)| client.as_ref().map(|inner| (id as ClientId, inner)))
     }
 
     /// Attempts to process a single deposit transaction.
@@ -87,13 +89,13 @@ impl TransactionEngine {
 impl TransactionEngine {
     fn process_regular_transaction(&mut self, tx: Tx, transaction: Transaction) -> Result<()> {
         // Return an error if the transaction ID has been already processed successfully.
-        if self.transactions.contains_key(&tx) {
+        if self.transactions[tx as usize].is_some() {
             return Err(TransactionIdAlreadyProcessed);
         }
 
         // Return an error if the transaction is a withdrawal and the client account doesn't exist.
         if let TransactionKind::Withdrawal = transaction.kind {
-            if !self.clients.contains_key(&transaction.client) {
+            if self.clients[transaction.client as usize].is_none() {
                 return Err(InvalidFirstTransaction);
             }
         }
@@ -108,7 +110,7 @@ impl TransactionEngine {
         }
 
         // Cache the transaction only if it was successful. Otherwise, it could be disputed.
-        self.transactions.insert(tx, transaction);
+        self.transactions[tx as usize] = Some(transaction);
 
         // Return successfully.
         Ok(())
@@ -116,9 +118,8 @@ impl TransactionEngine {
 
     fn process_special_transaction(&mut self, transaction: SpecialTransaction) -> Result<()> {
         // Return an error if the transaction ID hasn't been already processed successfully.
-        let old_transaction = self
-            .transactions
-            .get_mut(&transaction.tx)
+        let old_transaction = self.transactions[transaction.tx as usize]
+            .as_mut()
             .ok_or(UnknownTransactionId)?;
 
         // Return an error if this transaction's client ID doesn't match the old one.
@@ -157,7 +158,11 @@ impl TransactionEngine {
 ///
 /// Returns an `Error` if the client account is locked.
 fn retrieve_or_create_account(clients: &mut ClientMap, client: ClientId) -> Result<&mut Client> {
-    let account = clients.entry(client).or_insert_with(Client::init);
+    let index = client as usize;
+    if clients[index].is_none() {
+        clients[index] = Some(Client::init());
+    }
+    let account = clients[index].as_mut().unwrap();
     if account.is_locked() {
         return Err(ClientAccountLocked);
     }

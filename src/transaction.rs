@@ -12,6 +12,7 @@ pub type TransactionId = u32;
  *******************************************/
 
 /// A single regular transaction (i.e. deposit or withdrawal).
+#[derive(Clone)]
 pub(crate) struct Transaction {
     pub(crate) amount: Balance,
     pub(crate) client: ClientId,
@@ -26,6 +27,7 @@ pub(crate) struct SpecialTransaction {
     pub(crate) tx: TransactionId,
 }
 
+#[derive(Clone)]
 pub(crate) enum TransactionKind {
     Deposit,
     Withdrawal,
@@ -38,6 +40,7 @@ pub(crate) enum SpecialTransactionKind {
 }
 
 /// A transaction state.
+#[derive(Clone)]
 pub(crate) enum TransactionState {
     /// Accepted when a new regular transaction is successfully processed
     /// or when a disputed transaction is referenced by a resolve transaction.

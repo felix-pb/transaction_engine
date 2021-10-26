@@ -8,6 +8,7 @@ use crate::{Balance, Result, Transaction, TransactionError, TransactionKind, Tra
 pub type ClientId = u16;
 
 /// A client account.
+#[derive(Clone)]
 pub struct Client {
     available: Balance,
     total: Balance,
