@@ -371,6 +371,7 @@ name = "transaction_engine"
 version = "0.1.0"
 dependencies = [
  "csv",
+ "parking_lot",
  "rust_decimal",
  "serde",
  "thiserror",
