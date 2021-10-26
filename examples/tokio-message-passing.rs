@@ -1,6 +1,7 @@
 use std::time::Instant;
 use transaction_engine::{ClientId, TransactionEngine};
 
+const NUMBER_OF_CLIENTS: u32 = 65_536;
 const NUMBER_OF_TRANSACTIONS: u32 = 65_536_000;
 
 #[tokio::main]
@@ -22,7 +23,7 @@ async fn main() {
 
     let task2 = tokio::spawn(async move {
         for tx in 0..NUMBER_OF_TRANSACTIONS {
-            let client = (tx % 65_536) as ClientId;
+            let client = (tx % NUMBER_OF_CLIENTS) as ClientId;
             if tx < NUMBER_OF_TRANSACTIONS / 2 {
                 sender.send((true, client, tx, 1)).await.unwrap();
             } else {
