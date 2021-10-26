@@ -15,7 +15,7 @@ fn main() {
     let now = Instant::now();
 
     // Process 6.5536 million transactions in each worker thread.
-    let mut threads = Vec::with_capacity(10);
+    let mut threads = Vec::with_capacity(NUMBER_OF_THREADS as usize);
     for i in 0..NUMBER_OF_THREADS {
         let engine = engine.clone();
         let thread = std::thread::spawn(move || {
