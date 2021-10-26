@@ -5,7 +5,7 @@ use transaction_engine::{ClientId, TransactionEngine};
 
 const NUMBER_OF_CLIENTS: u32 = 65_536;
 const NUMBER_OF_THREADS: u32 = 4;
-const NUMBER_OF_TRANSACTIONS: u32 = 655_360;
+const NUMBER_OF_TRANSACTIONS: u32 = 6_553_600;
 
 fn main() {
     let engine = Arc::new(Mutex::new(TransactionEngine::init()));

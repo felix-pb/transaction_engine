@@ -3,7 +3,7 @@ use transaction_engine::{ClientId, TransactionEngine};
 
 const NUMBER_OF_CLIENTS: u32 = 65_536;
 const NUMBER_OF_THREADS: u32 = 4;
-const NUMBER_OF_TRANSACTIONS: u32 = 655_360;
+const NUMBER_OF_TRANSACTIONS: u32 = 6_553_600;
 
 #[tokio::main]
 async fn main() {
@@ -26,6 +26,8 @@ async fn main() {
             }
         });
     }
+
+    drop(sender);
 
     while let Ok((deposit, client, tx, amount)) = receiver.recv() {
         if deposit {
