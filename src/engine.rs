@@ -1,6 +1,6 @@
 use crate::{Amount, Client, ClientId, Result, TransactionError, TransactionId, TransactionState};
 use crate::{SpecialTransaction, SpecialTransactionKind, Transaction, TransactionKind};
-use std::collections::hash_map::{HashMap, Iter};
+use std::collections::HashMap;
 use TransactionError::*;
 use TransactionId as Tx;
 
@@ -45,7 +45,7 @@ impl TransactionEngine {
     }
 
     /// Returns an iterator over all client accounts in arbitrary order.
-    pub fn iter_accounts(&self) -> Iter<ClientId, Client> {
+    pub fn iter_accounts(&self) -> impl Iterator<Item = (&ClientId, &Client)> {
         self.clients.iter()
     }
 
