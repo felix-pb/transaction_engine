@@ -134,7 +134,7 @@ fn main() {
     // Collect all client accounts into a vector of `OutputCsvRow` structs.
     let mut rows = engine
         .iter_accounts()
-        .map(|(&id, account)| OutputCsvRow {
+        .map(|(id, account)| OutputCsvRow {
             client: id,
             available: Balance(account.get_available_balance()),
             held: Balance(account.get_held_balance()),

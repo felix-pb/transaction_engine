@@ -45,8 +45,8 @@ impl TransactionEngine {
     }
 
     /// Returns an iterator over all client accounts in arbitrary order.
-    pub fn iter_accounts(&self) -> impl Iterator<Item = (&ClientId, &Client)> {
-        self.clients.iter()
+    pub fn iter_accounts(&self) -> impl Iterator<Item = (ClientId, &Client)> {
+        self.clients.iter().map(|(&id, client)| (id, client))
     }
 
     /// Attempts to process a single deposit transaction.
