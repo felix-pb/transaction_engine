@@ -5,8 +5,7 @@ const NUMBER_OF_CLIENTS: u32 = 65_536;
 const NUMBER_OF_THREADS: u32 = 4;
 const NUMBER_OF_TRANSACTIONS: u32 = 6_553_600;
 
-#[tokio::main]
-async fn main() {
+fn main() {
     let mut engine = TransactionEngine::init();
     let (sender, receiver) = std::sync::mpsc::channel();
 
