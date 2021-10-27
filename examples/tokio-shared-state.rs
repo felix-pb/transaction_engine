@@ -51,13 +51,17 @@ impl TransactionStream {
     async fn next(&mut self) -> Option<Transaction> {
         // Implement the logic to extract a transaction from the socket.
         // Errors can be handled internally, or could be returned to caller.
-        self.stream.read_exact(&mut self.buffer).await.unwrap();
+        let n = self.stream.read(&mut self.buffer).await.unwrap();
         // Do stuff...
-        Some(Transaction::Deposit {
-            client: 1,
-            tx: 1,
-            amount: 1,
-        })
+        if n == 0 {
+            None
+        } else {
+            Some(Transaction::Deposit {
+                client: 1,
+                tx: 1,
+                amount: 1,
+            })
+        }
     }
 }
 
