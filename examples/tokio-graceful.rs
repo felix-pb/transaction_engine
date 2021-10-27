@@ -13,9 +13,12 @@ async fn main() {
     let mut engine = TransactionEngine::init();
     let (sender, mut receiver) = tokio::sync::mpsc::channel(TRANSACTION_BUFFER_SIZE);
 
+    // watch channel: the ctrl-c task will notify all other tasks to shutdown
     let (watch_tx, watch_rx) = tokio::sync::watch::channel(false);
+    // mpsc channel: all tasks will notify the main task that their
+    // shutdown is completed by dropping their sender.
     let (mpsc_tx, mut mpsx_rx) = tokio::sync::mpsc::channel(1000);
-    let mut shutdown = ShutdownTask::new(watch_rx, mpsc_tx);
+    let mut shutdown = Shutdown::new(watch_rx, mpsc_tx);
 
     tokio::spawn(async move {
         tokio::signal::ctrl_c().await.unwrap();
@@ -92,12 +95,14 @@ async fn main() {
 }
 
 #[derive(Clone)]
-struct ShutdownTask {
+struct Shutdown {
+    // Receiver half of watch channel to start shutting down current task.
     receiver: Receiver<bool>,
+    // Sending half of mpsc channel to notify main task that shutdown is completed.
     sender: Sender<()>,
 }
 
-impl ShutdownTask {
+impl Shutdown {
     fn new(receiver: Receiver<bool>, sender: Sender<()>) -> Self {
         Self { receiver, sender }
     }
