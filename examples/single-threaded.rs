@@ -37,3 +37,16 @@ fn main() {
     // Print the result of the benchmark.
     dbg!(elapsed);
 }
+
+// for client in 0..NUMBER_OF_CLIENTS {
+//     let id = client as ClientId;
+//     for tx in 0..1000 {
+//         if tx < 500 {
+//             engine.deposit(id, tx * NUMBER_OF_CLIENTS + client, 1).unwrap(); // <-- BAD CACHING
+//             engine.deposit(id, tx + client * 1000, 1).unwrap();              // <-- GOOD CACHING
+//         } else {
+//             engine.withdrawal(id, tx * NUMBER_OF_CLIENTS + client, 1).unwrap();  // <-- BAD CACHING
+//             engine.withdrawal(id, tx + client * 1000, 1).unwrap();               // <-- GOOD CACHING
+//         }
+//     }
+// }
